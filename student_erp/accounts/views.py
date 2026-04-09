@@ -24,20 +24,21 @@ def dashboard(request):
     context = {}
     
     if request.user.role == 'student':
-        try:
-            student = Student.objects.get(user=request.user)
-            courses = student.courses.all()
-            recent_grades = Grade.objects.filter(student=student)[:10]
-            
-            context.update({
-                'student': student,
-                'courses': courses,
-                'recent_grades': recent_grades,
-                'total_courses': courses.count(),
-                'gpa': calculate_gpa(student),
-            })
-        except Student.DoesNotExist:
-            pass
+        # Get or create student profile if it doesn't exist
+        student, created = Student.objects.get_or_create(
+            user=request.user,
+            defaults={'student_id': f"STU{request.user.id:06d}"}
+        )
+        courses = student.courses.all()
+        recent_grades = Grade.objects.filter(student=student)[:10]
+        
+        context.update({
+            'student': student,
+            'courses': courses,
+            'recent_grades': recent_grades,
+            'total_courses': courses.count(),
+            'gpa': calculate_gpa(student),
+        })
     
     elif request.user.role == 'teacher':
         courses = Course.objects.filter(teacher=request.user)
