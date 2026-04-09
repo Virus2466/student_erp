@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - Student ERP{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">
+            <i class="fas fa-user-circle me-2"></i>
+            My Profile
+        </h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <a href="{% url 'edit_profile' %}" class="btn btn-primary">
+                <i class="fas fa-edit me-1"></i>Edit Profile
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="rounded-circle img-fluid mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 150px; height: 150px;">
+                            <i class="fas fa-user fa-4x"></i>
+                        </div>
+                    {% endif %}
+                    <h4>{{ user.get_full_name|default:user.username }}</h4>
+                    <p class="text-muted">
+                        <span class="badge bg-info">{{ user.get_role_display }}</span>
+                    </p>
+                    <p class="text-muted">
+                        <i class="fas fa-envelope"></i> {{ user.email }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Personal Information
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="30%">Username:</th>
+                            <td>{{ user.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>Full Name:</th>
+                            <td>{{ user.get_full_name|default:"Not provided" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone:</th>
+                            <td>{{ user.phone|default:"Not provided" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date of Birth:</th>
+                            <td>{{ user.date_of_birth|default:"Not provided" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Address:</th>
+                            <td>{{ user.address|default:"Not provided"|linebreaks }}</td>
+                        </tr>
+                        <tr>
+                            <th>Role:</th>
+                            <td><span class="badge bg-primary">{{ user.get_role_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Joined:</th>
+                            <td>{{ user.date_joined|date:"F d, Y" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Last Login:</th>
+                            <td>{{ user.last_login|date:"F d, Y H:i" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            {% if user.role == 'student' %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <i class="fas fa-graduation-cap me-1"></i>
+                    Academic Information
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="30%">Student ID:</th>
+                            <td>{{ user.student_profile.student_id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Parent Name:</th>
+                            <td>{{ user.student_profile.parent_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Parent Phone:</th>
+                            <td>{{ user.student_profile.parent_phone }}</td>
+                        </tr>
+                        <tr>
+                            <th>Parent Email:</th>
+                            <td>{{ user.student_profile.parent_email|default:"Not provided" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Enrollment Date:</th>
+                            <td>{{ user.student_profile.enrollment_date|date:"F d, Y" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

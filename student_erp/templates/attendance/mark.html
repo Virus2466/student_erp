@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Mark Attendance{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Mark Attendance</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="course" class="form-label">Select Course</label>
+                                <select name="course" id="course" class="form-select" required>
+                                    <option value="">Choose a course...</option>
+                                    {% for course in courses %}
+                                    <option value="{{ course.id }}">{{ course.code }} - {{ course.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" name="date" id="date" class="form-control" value="{{ today }}" required>
+                            </div>
+                        </div>
+                        
+                        <div id="students-section" style="display: none;">
+                            <h5>Mark Attendance for Students</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Student ID</th>
+                                            <th>Name</th>
+                                            <th>Status</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="students-table">
+                                        <!-- Students will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Attendance</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('course').addEventListener('change', function() {
+    const courseId = this.value;
+    const studentsSection = document.getElementById('students-section');
+    const studentsTable = document.getElementById('students-table');
+    
+    if (courseId) {
+        // In a real implementation, you might fetch students enrolled in the course
+        // For now, we'll show all students
+        studentsTable.innerHTML = `
+            {% for student in students %}
+            <tr>
+                <td>{{ student.student_id }}</td>
+                <td>{{ student.user.get_full_name }}</td>
+                <td>
+                    <select name="attendance_{{ student.id }}" class="form-select">
+                        <option value="present">Present</option>
+                        <option value="absent">Absent</option>
+                        <option value="late">Late</option>
+                        <option value="excused">Excused</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="remarks_{{ student.id }}" class="form-control" placeholder="Optional remarks">
+                </td>
+            </tr>
+            {% endfor %}
+        `;
+        studentsSection.style.display = 'block';
+    } else {
+        studentsSection.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

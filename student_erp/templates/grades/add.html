@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add Grade - Student ERP{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">
+            <i class="fas fa-plus-circle me-2"></i>
+            Add New Grade
+        </h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <a href="{% url 'grade_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Grades
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-star me-1"></i>
+                    Grade Information
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Grade Calculation:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>A+: 90-100% (4.0 GPA)</li>
+                                <li>A: 80-89% (4.0 GPA)</li>
+                                <li>B+: 75-79% (3.5 GPA)</li>
+                                <li>B: 70-74% (3.0 GPA)</li>
+                                <li>C+: 65-69% (2.5 GPA)</li>
+                                <li>C: 60-64% (2.0 GPA)</li>
+                                <li>D: 50-59% (1.0 GPA)</li>
+                                <li>F: Below 50% (0.0 GPA)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <small>Note: The grade will be automatically calculated based on the percentage.</small>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i>Save Grade
+                            </button>
+                            <a href="{% url 'grade_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Live preview of grade calculation
+document.addEventListener('DOMContentLoaded', function() {
+    const marksObtained = document.querySelector('#id_marks_obtained');
+    const totalMarks = document.querySelector('#id_total_marks');
+    
+    function updateGradePreview() {
+        if (marksObtained.value && totalMarks.value) {
+            const percentage = (marksObtained.value / totalMarks.value) * 100;
+            let grade = '';
+            if (percentage >= 90) grade = 'A+';
+            else if (percentage >= 80) grade = 'A';
+            else if (percentage >= 75) grade = 'B+';
+            else if (percentage >= 70) grade = 'B';
+            else if (percentage >= 65) grade = 'C+';
+            else if (percentage >= 60) grade = 'C';
+            else if (percentage >= 50) grade = 'D';
+            else grade = 'F';
+            
+            // Show preview
+            let previewDiv = document.querySelector('#grade-preview');
+            if (!previewDiv) {
+                previewDiv = document.createElement('div');
+                previewDiv.id = 'grade-preview';
+                previewDiv.className = 'alert alert-success mt-2';
+                marksObtained.parentNode.appendChild(previewDiv);
+            }
+            previewDiv.innerHTML = `<i class="fas fa-chart-line"></i> <strong>Preview:</strong> ${percentage.toFixed(2)}% will result in grade <strong>${grade}</strong>`;
+        }
+    }
+    
+    marksObtained.addEventListener('input', updateGradePreview);
+    totalMarks.addEventListener('input', updateGradePreview);
+});
+</script>
+{% endblock %}

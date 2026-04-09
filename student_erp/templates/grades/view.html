@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}View Grade - Student ERP{% endblock %}
+
+{% block extra_css %}
+<style>
+    .grade-progress-detail {
+        height: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">
+            <i class="fas fa-eye me-2"></i>
+            Grade Details
+        </h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <a href="{% url 'grade_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Grades
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-star me-1"></i>
+                    Grade Information
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th width="30%">Student Name:</th>
+                            <td>{{ grade.student.user.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Student ID:</th>
+                            <td>{{ grade.student.student_id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Course:</th>
+                            <td>{{ grade.course.code }} - {{ grade.course.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Marks Obtained:</th>
+                            <td>{{ grade.marks_obtained }}</td>
+                        </tr>
+                        <tr>
+                            <th>Total Marks:</th>
+                            <td>{{ grade.total_marks }}</td>
+                        </tr>
+                        <tr>
+                            <th>Percentage:</th>
+                            <td>
+                                {% if grade.total_marks and grade.total_marks != 0 %}
+                                    {% widthratio grade.marks_obtained grade.total_marks 100 as percentage_value %}
+                                {% else %}
+                                    {% widthratio 0 1 100 as percentage_value %}
+                                {% endif %}
+                                {{ percentage_value }}%
+                                <div class="progress mt-2 grade-progress-detail">
+                                    <div class="progress-bar bg-success" data-progress-width="{{ percentage_value }}"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Grade:</th>
+                            <td>
+                                <span class="badge {% if grade.grade == 'F' %}bg-danger{% else %}bg-success{% endif %} fs-5">
+                                    {{ grade.grade }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Date Recorded:</th>
+                            <td>{{ grade.date_recorded|date:"F d, Y" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('[data-progress-width]').forEach(function (bar) {
+        bar.style.width = bar.dataset.progressWidth + '%';
+    });
+</script>
+{% endblock %}
